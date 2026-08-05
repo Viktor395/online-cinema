@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Float, DECIMAL, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from src.core.database import Base
 
-# Таблиці асоціацій для зв'язків багато-до-багатьох
+
 movie_genres = Table(
     "movie_genres",
     Base.metadata,
@@ -57,7 +57,7 @@ class Certification(Base):
     __tablename__ = "certifications"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String, unique=True, index=True, nullable=False)  # наприклад, "PG-13", "R"
+    name = Column(String, unique=True, index=True, nullable=False)
 
     movies = relationship("Movie", back_populates="certification")
 
@@ -69,7 +69,7 @@ class Movie(Base):
     uuid = Column(String, unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
     title = Column(String, index=True, nullable=False)
     year = Column(Integer, nullable=False)
-    time = Column(Integer, nullable=False)  # тривалість у хвилинах
+    time = Column(Integer, nullable=False)
     imdb = Column(Float, nullable=False)
     votes = Column(Integer, nullable=False)
     meta_score = Column(Float, nullable=True)
@@ -79,8 +79,9 @@ class Movie(Base):
     
     certification_id = Column(Integer, ForeignKey("certifications.id"), nullable=False)
     
-    # Зв'язки
+    
     certification = relationship("Certification", back_populates="movies")
     genres = relationship("Genre", secondary=movie_genres, back_populates="movies")
     directors = relationship("Director", secondary=movie_directors, back_populates="movies")
     stars = relationship("Star", secondary=movie_stars, back_populates="movies")
+    

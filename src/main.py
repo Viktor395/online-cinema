@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from src.api.auth import router as auth_router
+from src.api.movies import router as movies_router
 from src.core.database import SessionLocal, Base, engine
 from src.models.user import UserGroup, UserGroupEnum
 
@@ -23,6 +24,7 @@ def startup_event():
     init_user_groups()
 
 app.include_router(auth_router)
+app.include_router(movies_router)
 
 @app.get("/")
 def read_root():
