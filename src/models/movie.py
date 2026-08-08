@@ -7,22 +7,49 @@ from src.core.database import Base
 movie_genres = Table(
     "movie_genres",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id", ondelete="CASCADE"), primary_key=True),
-    Column("genre_id", Integer, ForeignKey("genres.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "movie_id",
+        Integer,
+        ForeignKey("movies.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "genre_id",
+        Integer,
+        ForeignKey("genres.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 movie_directors = Table(
     "movie_directors",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id", ondelete="CASCADE"), primary_key=True),
-    Column("director_id", Integer, ForeignKey("directors.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "movie_id",
+        Integer,
+        ForeignKey("movies.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "director_id",
+        Integer,
+        ForeignKey("directors.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
 )
 
 movie_stars = Table(
     "movie_stars",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id", ondelete="CASCADE"), primary_key=True),
-    Column("star_id", Integer, ForeignKey("stars.id", ondelete="CASCADE"), primary_key=True),
+    Column(
+        "movie_id",
+        Integer,
+        ForeignKey("movies.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    Column(
+        "star_id", Integer, ForeignKey("stars.id", ondelete="CASCADE"), primary_key=True
+    ),
 )
 
 
@@ -41,7 +68,9 @@ class Director(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, unique=True, index=True, nullable=False)
 
-    movies = relationship("Movie", secondary=movie_directors, back_populates="directors")
+    movies = relationship(
+        "Movie", secondary=movie_directors, back_populates="directors"
+    )
 
 
 class Star(Base):
@@ -66,7 +95,13 @@ class Movie(Base):
     __tablename__ = "movies"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    uuid = Column(String, unique=True, index=True, nullable=False, default=lambda: str(uuid.uuid4()))
+    uuid = Column(
+        String,
+        unique=True,
+        index=True,
+        nullable=False,
+        default=lambda: str(uuid.uuid4()),
+    )
     title = Column(String, index=True, nullable=False)
     year = Column(Integer, nullable=False)
     time = Column(Integer, nullable=False)
@@ -76,12 +111,12 @@ class Movie(Base):
     gross = Column(Float, nullable=True)
     description = Column(Text, nullable=False)
     price = Column(DECIMAL(10, 2), nullable=False)
-    
+
     certification_id = Column(Integer, ForeignKey("certifications.id"), nullable=False)
-    
-    
+
     certification = relationship("Certification", back_populates="movies")
     genres = relationship("Genre", secondary=movie_genres, back_populates="movies")
-    directors = relationship("Director", secondary=movie_directors, back_populates="movies")
+    directors = relationship(
+        "Director", secondary=movie_directors, back_populates="movies"
+    )
     stars = relationship("Star", secondary=movie_stars, back_populates="movies")
-    

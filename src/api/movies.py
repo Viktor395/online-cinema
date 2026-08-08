@@ -17,7 +17,7 @@ def get_movies(
     search: Optional[str] = None,
     genre_id: Optional[int] = None,
     min_rating: Optional[float] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Отримати список фільмів із пагінацією, пошуком за назвою та фільтрами."""
     query = db.query(Movie)
@@ -43,15 +43,14 @@ def get_movie(movie_id: int, db: Session = Depends(get_db)):
     """Отримати детальну інформацію про конкретний фільм за його ID."""
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+        )
     return movie
 
 
 @router.post("/", response_model=MovieResponse, status_code=status.HTTP_201_CREATED)
-def create_movie(
-    movie_in: MovieCreateUpdate,
-    db: Session = Depends(get_db)
-):
+def create_movie(movie_in: MovieCreateUpdate, db: Session = Depends(get_db)):
     """Створити новий фільм (доступно для модераторів/адмінів)."""
     new_movie = Movie(
         title=movie_in.title,
@@ -63,7 +62,7 @@ def create_movie(
         gross=movie_in.gross,
         description=movie_in.description,
         price=movie_in.price,
-        certification_id=movie_in.certification_id
+        certification_id=movie_in.certification_id,
     )
 
     # Додаємо зв'язки з жанрами за їх ID
@@ -79,14 +78,14 @@ def create_movie(
 
 @router.put("/{movie_id}", response_model=MovieResponse)
 def update_movie(
-    movie_id: int,
-    movie_in: MovieCreateUpdate,
-    db: Session = Depends(get_db)
+    movie_id: int, movie_in: MovieCreateUpdate, db: Session = Depends(get_db)
 ):
     """Оновити інформацію про фільм за його ID."""
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+        )
 
     # Оновлюємо звичайні поля
     movie.title = movie_in.title
@@ -115,7 +114,9 @@ def delete_movie(movie_id: int, db: Session = Depends(get_db)):
     """Видалити фільм за його ID."""
     movie = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Movie not found"
+        )
 
     db.delete(movie)
     db.commit()

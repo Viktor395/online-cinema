@@ -11,6 +11,7 @@ class UserGroupEnum(str, enum.Enum):
     MODERATOR = "MODERATOR"
     ADMIN = "ADMIN"
 
+
 class UserGroup(Base):
     __tablename__ = "user_groups"
 
@@ -18,6 +19,7 @@ class UserGroup(Base):
     name = Column(String, unique=True, nullable=False)
 
     users = relationship("User", back_populates="group")
+
 
 class User(Base):
     __tablename__ = "users"
@@ -32,4 +34,3 @@ class User(Base):
     favorites = relationship("Movie", secondary=user_favorites, backref="favorited_by")
     group_id = Column(Integer, ForeignKey("user_groups.id"), nullable=False)
     group = relationship("UserGroup", back_populates="users")
-    
