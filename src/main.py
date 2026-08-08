@@ -4,6 +4,7 @@ from src.api.movies import router as movies_router
 from src.core.database import SessionLocal, Base, engine
 from src.models.user import UserGroup, UserGroupEnum
 from src.api.favorites import router as favorites_router
+from src.api.cart_orders import router as cart_orders_router
 
 
 app = FastAPI(title="Online Cinema API")
@@ -27,6 +28,7 @@ def startup_event():
 app.include_router(auth_router)
 app.include_router(movies_router)
 app.include_router(favorites_router)
+app.include_router(cart_orders_router)
 
 @app.get("/")
 def read_root():
