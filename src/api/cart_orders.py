@@ -9,7 +9,7 @@ from src.schemas.order import CartResponse, OrderResponse
 
 router = APIRouter(prefix="/shop", tags=["Cart & Orders"])
 
-# --- Кошик ---
+
 @router.get("/cart", response_model=CartResponse)
 def get_cart(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     cart = db.query(Cart).filter(Cart.user_id == current_user.id).first()
@@ -22,7 +22,7 @@ def get_cart(current_user: User = Depends(get_current_active_user), db: Session 
 
 @router.post("/cart/add/{movie_id}")
 def add_to_cart(movie_id: int, current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
-    # Викликаємо get_cart всередині або шукаємо напряму
+
     cart = db.query(Cart).filter(Cart.user_id == current_user.id).first()
     if not cart:
         cart = Cart(user_id=current_user.id)
@@ -39,7 +39,7 @@ def add_to_cart(movie_id: int, current_user: User = Depends(get_current_active_u
         db.commit()
     return {"detail": "Movie added to cart"}
 
-# --- Замовлення ---
+
 @router.post("/order", status_code=status.HTTP_201_CREATED)
 def create_order(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
     cart = db.query(Cart).filter(Cart.user_id == current_user.id).first()
