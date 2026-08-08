@@ -29,14 +29,18 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
     to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS))
+    expire = datetime.now(timezone.utc) + (
+        expires_delta or timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    )
     to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(to_encode, REFRESH_SECRET_KEY, algorithm=ALGORITHM)
 
@@ -51,7 +55,9 @@ def verify_refresh_token(token: str) -> dict | None:
         return None
 
 
-def get_current_active_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+def get_current_active_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Неможливо перевірити облікові дані",
@@ -66,7 +72,7 @@ def get_current_active_user(token: str = Depends(oauth2_scheme), db: Session = D
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    
+
     user = db.query(User).filter(User.id == int(user_id)).first()
     if user is None:
         raise credentials_exception

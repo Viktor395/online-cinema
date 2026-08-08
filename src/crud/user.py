@@ -15,7 +15,7 @@ def create_user(db: Session, user_in: UserCreate, group_id: int = 1):
         username=user_in.username,
         hashed_password=hashed_password,
         is_active=True,
-        group_id=group_id
+        group_id=group_id,
     )
     db.add(db_user)
     db.commit()

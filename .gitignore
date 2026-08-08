@@ -13,3 +13,8 @@ __pycache__/
 
 .vscode/
 .idea/
+
+.mypy_cache/
+__pycache__/
+.venv/
+.pytest_cache/
