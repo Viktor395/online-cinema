@@ -3,11 +3,14 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from src.core.database import Base
 import enum
+from src.models.favorite import user_favorites
+
 
 class UserGroupEnum(str, enum.Enum):
     USER = "USER"
     MODERATOR = "MODERATOR"
     ADMIN = "ADMIN"
+
 
 class UserGroup(Base):
     __tablename__ = "user_groups"
@@ -16,6 +19,7 @@ class UserGroup(Base):
     name = Column(String, unique=True, nullable=False)
 
     users = relationship("User", back_populates="group")
+
 
 class User(Base):
     __tablename__ = "users"
@@ -27,7 +31,6 @@ class User(Base):
     is_active = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
+    favorites = relationship("Movie", secondary=user_favorites, backref="favorited_by")
     group_id = Column(Integer, ForeignKey("user_groups.id"), nullable=False)
     group = relationship("UserGroup", back_populates="users")
-    

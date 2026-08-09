@@ -8,6 +8,9 @@ from alembic import context
 from src.core.config import settings
 from src.core.database import Base
 from src.models.user import User, UserGroup
+from src.models.movie import Movie, Genre, Director, Star, Certification
+from src.models.favorite import user_favorites
+from src.models.order import Order, Cart, order_movies, cart_movies
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
