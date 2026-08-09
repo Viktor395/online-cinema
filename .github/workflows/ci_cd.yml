@@ -1,9 +1,13 @@
-name: Tests
+name: CI/CD Pipeline
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "main", "master", "feature/docker-setup" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
-  test:
+  quality-and-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -14,15 +18,46 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install dependencies
+      - name: Install dependencies and tools
         run: |
           pip install poetry
           poetry install --no-root
-          poetry run pip install python-multipart
+          poetry run pip install mypy flake8 black python-multipart pytest-cov
 
-      - name: Run Tests
-        run: poetry run python -m pytest tests/
+      - name: Lint and Format Check (Black & Flake8)
+        run: |
+          poetry run black --check src/
+          poetry run flake8 src/
+
+      - name: Type Checking (Mypy)
+        run: |
+          poetry run mypy src/
+
+      - name: Run Tests with Coverage
+        run: |
+          poetry run python -m pytest tests/ --cov=src --cov-report=xml
         env:
           PYTHONPATH: .
           DATABASE_URL: sqlite:///./test.db
           SECRET_KEY: test_secret_key_for_ci
+
+  deploy-to-aws:
+    needs: quality-and-tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+          script: |
+            cd /path/to/your/online-cinema
+            git pull origin main
+            poetry install --no-root
+            sudo systemctl restart online-cinema
